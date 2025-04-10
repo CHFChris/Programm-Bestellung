@@ -1,13 +1,38 @@
-import tkinter
+import tkinter as tk
+from tkinter import ttk
+import mariadb
 
-window = tkinter.Tk()
-window.title("Bestellungen")
-window.geometry("600x400")
+conn = mariadb.connect(
+    user="Raphi",
+    password="RaphiH",
+    host="localhost",
+    port=3306,
+    database="schlumpfshop3"
+)
 
-textentry = tkinter.Entry(window, width=50)
-textentry.pack()
+cur = conn.cursor()
 
-task_listbox = tkinter.Listbox(window, width=80, height=15)
-task_listbox.pack()
+cur.execute
+(
+"""
+SELECT 
+    artikel.Artikelname,  
+    artikel.Lagerbestand, 
+    lieferant.Lieferantenname
+FROM artikel
+JOIN lieferant ON artikel.Lieferant = lieferant.ID_Lieferant
+"""
+)
 
-window.mainloop()
+fenster = tk.Tk()
+fenster.title("Bestellungen")
+fenster.geometry("800x400")
+
+spalten = ["Artikelname", "Lagerbestand", "Lieferantenname"]
+
+tabelle = ttk.Treeview(fenster, columns=spalten, show="headings")
+
+fenster.mainloop()
+
+cur.close()
+conn.close()
