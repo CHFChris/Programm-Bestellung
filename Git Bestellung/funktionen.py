@@ -14,7 +14,6 @@ cur = conn.cursor()
 cur.execute("""
 SELECT 
     artikel.Artikelname, 
-    artikel.Preis_Netto, 
     artikel.Lagerbestand, 
     lieferant.Lieferantenname
 FROM artikel
