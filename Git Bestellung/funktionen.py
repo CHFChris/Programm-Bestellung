@@ -6,7 +6,7 @@ class Artikel:
         self.bestand = bestand
         self.lieferant = lieferant
 
-def hole_artikel_unter_mindestbestand(mindestbestand):
+def Bestellungen(mindestbestand):
     conn = mariadb.connect(
         user="Raphi",
         password="RaphiH",
