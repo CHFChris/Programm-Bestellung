@@ -1,44 +1,36 @@
-import tkinter as tk
-from tkinter import ttk
 import mariadb
 
-conn = mariadb.connect(
-    user="Raphi",
-    password="RaphiH",
-    host="localhost",
-    port=3306,
-    database="schlumpfshop3"
-)
-cur = conn.cursor()
+class Artikel:
+    def __init__(self, name, bestand, lieferant):
+        self.name = name
+        self.bestand = bestand
+        self.lieferant = lieferant
 
-cur.execute("""
-SELECT 
-    artikel.Artikelname, 
-    artikel.Lagerbestand, 
-    lieferant.Lieferantenname
-FROM artikel
-JOIN lieferant ON artikel.Lieferant = lieferant.ID_Lieferant
-""")
+def hole_artikel_unter_mindestbestand(mindestbestand):
+    conn = mariadb.connect(
+        user="Raphi",
+        password="RaphiH",
+        host="localhost",
+        port=3306,
+        database="schlumpfshop3"
+    )
+    cur = conn.cursor()
 
-alle_artikel = cur.fetchall()
+    cur.execute("""
+        SELECT artikel.Artikelname, artikel.Lagerbestand, lieferant.Lieferantenname
+        FROM artikel
+        JOIN lieferant ON artikel.Lieferant = lieferant.ID_Lieferant
+        WHERE artikel.Lagerbestand < ?
+    """, (mindestbestand,))
 
-fenster = tk.Tk()
-fenster.title("Bestellungen")
-fenster.geometry("800x400")
+    daten = cur.fetchall()
 
-spalten = ["Artikelname", "Preis_Netto", "Lagerbestand", "Lieferantenname"]
+    artikel_liste = []
+    for name, bestand, lieferant in daten:
+        artikel = Artikel(name, bestand, lieferant)
+        artikel_liste.append(artikel)
 
-tabelle = ttk.Treeview(fenster, columns=spalten, show="headings")
+    cur.close()
+    conn.close()
 
-for spalte in spalten:
-    tabelle.heading(spalte, text=spalte)
-
-for artikel in alle_artikel:
-    tabelle.insert("", tk.END, values=artikel)
-
-tabelle.pack(fill=tk.BOTH, expand=True)
-
-fenster.mainloop()
-
-cur.close()
-conn.close()
+    return artikel_liste
